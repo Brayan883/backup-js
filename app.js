@@ -4,7 +4,7 @@ require('dotenv').config()
 const fs = require('fs');
 const Path = require('path');
 const moment = require('moment')
-nodeCron.schedule("1 * * * * *", ()=>{
+nodeCron.schedule('30 */1 * * * *', ()=>{
     let fecha = new Date().getMinutes()
         mysqldump({
         connection: {
@@ -22,34 +22,28 @@ nodeCron.schedule("1 * * * * *", ()=>{
     timezone: "America/Bogota"
  });
 
- let ruta = './dbs'
- let array = []
-    try {
-        let funcion = (array)=>{
-            console.log(array , 'si')
-            if(array.length >0){
-                console.log(array);
-                if(fs.existsSync(array[0])){
-                    fs.unlinkSync(array[0])
-                    array.shift(array[0]);
-                    console.log(array , ' eliminado' )
-                }else{
-                    console.log('error no existe');
-                }
-            }
-        }
+     nodeCron.schedule('*/2 * * * *', ()=>{
+        let ruta = './dbs'
+        let array = []
         if(fs.existsSync(ruta)){
             fs.readdirSync(ruta).forEach((file)=>{
                 const curPath = Path.join(ruta, file )
                 array.push(curPath)
             }) 
-            nodeCron.schedule("4 * * * * *", funcion(array) ,
-            {
-                scheduled: true,
-                timezone: "America/Bogota"
-            })
+            console.log(array);
+            if(array.length >0){
+                if(fs.existsSync(array[0])){
+                    fs.unlinkSync(array[0])
+                    array.shift(array[0],' eliminado');
+                    console.log(array , ' recientes' )
+                }else{
+                    console.log('error no existe');
+                }
+            }
         }
-      
-     } catch (error) {
-        console.log(error);
-     }
+        console.log('si funciona');
+     } ,
+     {
+     scheduled: true,
+     timezone: "America/Bogota"
+    })
